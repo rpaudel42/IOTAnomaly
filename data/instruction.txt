@@ -1,0 +1,12 @@
+The instances in the flow stats are collected every one minute and in the annotations you will find the start and end time of the attack.
+
+The time stamp in flow stats is in milliseconds and in annotation it’s in seconds.
+
+“1527838552,1527839153,Localfeatures|Allfeatures|Arpfeatures,ArpSpoof100L2D”
+
+In the above line is found in annotations of Samsung smart camera. It indicates that the start time of the attack to be 1527838552 and end time 1527839153.
+"Localfeatures|Allfeatures|Arpfeatures" corresponds to flows that the attacks are launched through.
+"ArpSpoof100L2D” explains that the attack was arpspoof which is lauched with the maximum limit of 100 packets per seconds and its launched through local to device.
+In order to identify the attack rows in flow stats you can use below condition.
+
+“if (flowtime  >= startTime*1000 and endTime*1000>=flowtime) then attack = true” -- This corresponds to the line 4470 to 4479 in flow stats file to be the ArpSpoof100L2D attack.
