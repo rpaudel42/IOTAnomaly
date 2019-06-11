@@ -18,7 +18,7 @@ class PcapParser:
 
         for pkt in pkts:
             print(pkt)
-            print("\n\n\n")
+            print("\n\n")
 
         # ports = [80, 25]
         #
