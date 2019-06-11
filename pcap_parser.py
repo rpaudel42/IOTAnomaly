@@ -14,11 +14,20 @@ class PcapParser:
         pass
 
     def read_pcap_file(self, filename):
-        pkts = rdpcap(filename)
 
-        for pkt in pkts:
-            print(pkt)
-            print("\n\n")
+        if not os.path.isfile(filename):
+            print('"{}" does not exist'.format(filename), file=sys.stderr)
+            sys.exit(-1)
+
+
+        packets = rdpcap(filename)
+
+        i = 0
+        for packet in packets:
+            print(packet.show())
+            print("\n\n\n")
+            i += 1
+        print("Total: ", i)
 
         # ports = [80, 25]
         #

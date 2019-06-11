@@ -40,8 +40,9 @@ def main(args):
     4. timeslice: duration in sec for each individual graph
     :return: None:
     '''
-    csv = CsvParser()
-    csv.read_csv_file(args.datafile)
+
+    # csv = CsvParser()
+    # csv.read_csv_file(args.datafile)
 
     pcap = PcapParser()
     pcap.read_pcap_file(args.pcapfile)
