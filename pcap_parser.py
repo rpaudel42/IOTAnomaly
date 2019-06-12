@@ -5,6 +5,8 @@
 # ========  =========  ========================================================
 # 6/11/19   Paudel     Initial version,
 # ******************************************************************************
+import sys
+import pandas as pd
 from scapy.all import *
 
 class PcapParser:
@@ -12,6 +14,9 @@ class PcapParser:
     def __init__(self):
         print("\n\n..... Parsing PCAP File.....")
         pass
+
+    d = {'Time': [], 'srcIP': [], 'srcMAC': [], 'desIP': [], 'desMAC': [], 'pktSize': [], 'ports': [], 'attack': []}
+    df = pd.DataFrame(data=d)
 
     def read_pcap_file(self, filename):
 
@@ -30,9 +35,9 @@ class PcapParser:
         print("Total: ", i)
 
         # ports = [80, 25]
-        #
+
         # filtered = (pkt for pkt in pkts if
-        #     TCP in pkt and
-        #     (pkt[TCP].sport in ports or pkt[TCP].dport in ports))
-        #
+            # TCP in pkt and
+            # (pkt[TCP].sport in ports or pkt[TCP].dport in ports))
+
         # wrpcap('filtered.pcap', filtered)
