@@ -34,7 +34,7 @@ class PcapParser:
 
         packets = rdpcap(filename)
 
-        time = ["Time"]
+        timestamp = ["Time"]
         srcip = ["srcIP"]
         srcmac = ["srcMAC"]
         desip = ["desIP"]
@@ -64,8 +64,15 @@ class PcapParser:
             print("\n\n\n")
             i += 1
 
-        d = dict(time, srcip, srcmac, desip, desmac, pktsize,
-             ports, attack)
+        d = {}
+        d['Time'] = timestamp
+        d['srcIP'] = srcip
+        d['srcMAC'] = srcmac
+        d['desIP'] = desip
+        d['desMAC'] = desmac
+        d['pktSize'] = pktsize
+        d['ports'] = ports
+        d['attack'] = attack
         df = pd.DataFrame.from_dict(d, orient="index")
 
         print(df)
