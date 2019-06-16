@@ -40,7 +40,8 @@ class PcapParser:
         desip = ["desIP"]
         desmac = ["desMAC"]
         pktsize = ["pktSize"]
-        ports = ["ports"]
+        srcport = ["srcPort"]
+        desport = ["desPort"]
         attack = ["attack"]
 
         i = 0
@@ -49,7 +50,6 @@ class PcapParser:
             #print(packet.show())
 
             count = i
-            interesting_packet_count = 0
 
             if (packet.haslayer(IP)):
                 tempstringsrcip = packet.getlayer(IP).src
@@ -57,10 +57,25 @@ class PcapParser:
                 tempstringdesip = packet.getlayer(IP).dst
                 desip.extend([tempstringdesip])
 
-            #tempString = packet.show()
-            #tempList = tempString.splitlines()
-            #srcmac.extend([])
-            #desmac.extend([])
+            if (packet.haslayer(TCP)):
+                tempstringsrcport = packet.getlayer(TCP).sport
+                srcport.extend([tempstringsrcport])
+                tempstringdesport = packet.getlayer(TCP).dport
+                desport.extend([tempstringdesport])
+            elif (packet.haslayer(UDP)):
+                tempstringsrcport = packet.getlayer(UDP).sport
+                srcport.extend([tempstringsrcport])
+                tempstringdesport = packet.getlayer(UDP).dport
+                desport.extend([tempstringdesport])
+
+            if (packet.haslayer(Ether)):
+                tempstringsrcmac = packet.getlayer(Ether).src
+                srcmac.extend([tempstringsrcmac])
+                tempstringdesmac = packet.getlayer(Ether).dst
+                desmac.extend([tempstringdesmac])
+                tempstringpktsize = len(packet)
+                pktsize.extend([tempstringpktsize])
+
             print("\n\n\n")
             i += 1
 
@@ -71,17 +86,14 @@ class PcapParser:
         d['desIP'] = desip
         d['desMAC'] = desmac
         d['pktSize'] = pktsize
-        d['ports'] = ports
+        d['srcPort'] = srcport
+        d['desPort'] = desport
         d['attack'] = attack
         df = pd.DataFrame.from_dict(d, orient="index")
 
         print(df)
 
         print("Total: ", i)
-
-        print('{} contains {} packets ({} interesting)'.
-              format(filename, count, interesting_packet_count))
-
 
         # df.to_csv(index=False)
 
