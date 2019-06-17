@@ -39,6 +39,20 @@ class PcapParser:
         desport = ["desPort"]
         attack = ["attack"]
 
+        times1 = [[1527860996, 1527861596], [1527862604, 1527863204], [1527864215, 1527864815]]
+
+        attacksforipnum1 = {"192.168.1.248": times1}
+
+        times2 = [[1527893138, 1527893738], [1527889925, 1527890525], [1527891530, 1527892130], [1527961822, 1527962423]
+                  , [1527963430, 1527964030], [1527965037, 1527965637], [1527968269, 1527968870],
+                  [1527969880, 1527970480], [1527971486, 1527972086]]
+
+        attacksforipnum2 = {"192.168.1.175": times2}
+
+        #attacksforipnum3 = {"": }
+
+        #attack_d = {}
+
         i = 0
         for packet in packets:
 
@@ -100,12 +114,3 @@ class PcapParser:
         print("Total: ", i)
 
         # df.to_csv(index=False)
-
-        # Old comments below
-        # ports = [80, 25]
-
-        # filtered = (pkt for pkt in pkts if
-            # TCP in pkt and
-            # (pkt[TCP].sport in ports or pkt[TCP].dport in ports))
-
-        # wrpcap('filtered.pcap', filtered)
