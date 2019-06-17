@@ -7,6 +7,7 @@
 # ******************************************************************************
 import sys
 import time
+import datetime
 import argparse
 import os
 import pandas as pd
@@ -19,22 +20,15 @@ class PcapParser:
         print("\n\n..... Parsing PCAP File.....")
         pass
 
-    def printable_timestamp(ts, resol):
-        ts_sec = ts // resol
-        ts_subsec = ts % resol
-        ts_sec_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(ts_sec))
-        return '{}.{}'.format(ts_sec_str, ts_subsec)
-
     def read_pcap_file(self, filename):
 
         if not os.path.isfile(filename):
             print('"{}" does not exist'.format(filename), file=sys.stderr)
             sys.exit(-1)
 
-
         packets = rdpcap(filename)
 
-        timestamp = ["Time"]
+        tstamp = ["Time"]
         srcip = ["srcIP"]
         srcmac = ["srcMAC"]
         desip = ["desIP"]
@@ -45,9 +39,10 @@ class PcapParser:
         attack = ["attack"]
 
         i = 0
+
         for packet in packets:
 
-            #print(packet.show())
+            print(packet.show())
 
             count = i
 
@@ -79,8 +74,11 @@ class PcapParser:
             print("\n\n\n")
             i += 1
 
+            if i == 5:
+                break
+
         d = {}
-        d['Time'] = timestamp
+        d['Time'] = tstamp
         d['srcIP'] = srcip
         d['srcMAC'] = srcmac
         d['desIP'] = desip
