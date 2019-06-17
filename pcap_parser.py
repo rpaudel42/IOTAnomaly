@@ -8,6 +8,7 @@
 import sys
 import time
 import datetime
+import dpkt
 import argparse
 import os
 import pandas as pd
@@ -39,7 +40,6 @@ class PcapParser:
         attack = ["attack"]
 
         i = 0
-
         for packet in packets:
 
             print(packet.show())
@@ -70,6 +70,12 @@ class PcapParser:
                 desmac.extend([tempstringdesmac])
                 tempstringpktsize = len(packet)
                 pktsize.extend([tempstringpktsize])
+
+            tempstringtstamp = str(packet.time)
+            tstamp.extend([tempstringtstamp])
+
+            #    tempstringtstamp = str(datetime.datetime.utcfromtimestamp(ts))
+            #    tstamp.extend([tempstringtstamp])
 
             print("\n\n\n")
             i += 1
