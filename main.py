@@ -25,7 +25,7 @@ def parse_args():
     args.add_argument('-p', "--pcapfile", default = "data/pcap/test.pcap",
                       help="Path to pcap file from wireshark")
 
-    args.add_argument('-t',"--timeslice", default=5, type=int,
+    args.add_argument('-t',"--timeslice", default=60, type=int,
                       help="Timestamp for each graph")
 
     return args.parse_args()
