@@ -311,9 +311,12 @@ class PcapParser:
                     [1540293784, 1540294384],
                     [1540294394, 1540294994]]
 
-        #need to test each row of dataframe against attack times to see if ip is within times, 1 or 0 for attack
-
         attacksforipnum10 = {"192.168.1.119": times10}
+
+        attacksdict = {"192.168.1.248": times1, "192.168.1.129": times2, "192.168.1.239": times3,
+                       "192.168.1.227": times4, "192.168.1.241": times5, "192.168.1.163": times6,
+                       "192.168.1.118": times7, "192.168.1.223": times8, "192.168.1.165": times9,
+                       "192.168.1.119": times10}
 
         #attack_d = {}
 
@@ -352,13 +355,26 @@ class PcapParser:
             tempstringtstamp = str(packet.time)
             tstamp.extend([tempstringtstamp])
 
-            #    tempstringtstamp = str(datetime.datetime.utcfromtimestamp(ts))
-            #    tstamp.extend([tempstringtstamp])
+            # Testing for attack and filling last column below
+
+            isattack = False
+
+            #if srcip is a key in attacks dict, run below for loop
+
+            if tempstringsrcip in attacksdict:
+                counter = 0
+                for position in attacksdict[tempstringsrcip]:
+                    if position[0] <= packet.time and position[1] >= packet.time:
+                        isattack = True
+                        break
+
+            tempstringisattack = str(isattack)
+            attack.extend([tempstringisattack])
 
             print("\n\n\n")
             i += 1
 
-            if i == 5:
+            if i == 15:
                 break
 
         d = {}
@@ -377,4 +393,4 @@ class PcapParser:
 
         print("Total: ", i)
 
-        # df.to_csv(index=False)
+        #df.to_csv(index=False)
