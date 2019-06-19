@@ -35,7 +35,7 @@ def main(args):
     '''
     :param args:
     1. datafile: name of the csv file
-    2. graphfile: name of the prased graph file
+    2. graphfile: name of the parsed graph file
     3. pcapfile: name of the packet capture file
     4. timeslice: duration in sec for each individual graph
     :return: None:
