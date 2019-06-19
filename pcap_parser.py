@@ -4,15 +4,11 @@
 # Date      Name       Description
 # ========  =========  ========================================================
 # 6/11/19   Paudel     Initial version,
+# 6/19/19   Muncy      Commented and working version
 # ******************************************************************************
 import sys
-import time
-import datetime
-import dpkt
-import argparse
 import os
 import pandas as pd
-import numpy as np
 from scapy.all import *
 
 class PcapParser:
@@ -27,8 +23,10 @@ class PcapParser:
             print('"{}" does not exist'.format(filename), file=sys.stderr)
             sys.exit(-1)
 
+        #reads packet capture using scapy
         packets = rdpcap(filename)
 
+        #creating lists for different packet information
         tstamp = ["Time"]
         srcip = ["srcIP"]
         srcmac = ["srcMAC"]
@@ -39,6 +37,7 @@ class PcapParser:
         desport = ["desPort"]
         attack = ["attack"]
 
+        #below lists contain start and end time pairs for attacks with each list seperate based on ip address
         times1 = [
                     [1527838552, 1527839153],
                     [1527835334, 1527835936],
@@ -83,8 +82,6 @@ class PcapParser:
                     [1528280869, 1528281470],
                     [1528282470, 1528283070]]
 
-        attacksforipnum1 = {"192.168.1.248": times1}
-
         times2 = [
                     [1540358552, 1540359152],
                     [1540357342, 1540357942],
@@ -117,8 +114,6 @@ class PcapParser:
                     [1540363696, 1540364296],
                     [1540364696, 1540365296]]
 
-        attacksforipnum2 = {"192.168.1.129": times2}
-
         times3 = [
                     [1540218159, 1540218759],
                     [1540214943, 1540215543],
@@ -129,8 +124,6 @@ class PcapParser:
                     [1540305374, 1540305974],
                     [1540305984, 1540306584],
                     [1540306594, 1540307194]]
-
-        attacksforipnum3 = {"192.168.1.239": times3}
 
         times4 = [
                     [1527843385, 1527843985],
@@ -161,8 +154,6 @@ class PcapParser:
                     [1528275905, 1528276506],
                     [1528277506, 1528278106]]
 
-        attacksforipnum4 = {"192.168.1.227": times4}
-
         times5 = [
                     [1527848238, 1527848838],
                     [1527844998, 1527845599],
@@ -186,14 +177,10 @@ class PcapParser:
                     [1528265025, 1528265626],
                     [1528266626, 1528267226]]
 
-        attacksforipnum5 = {"192.168.1.241": times5}
-
         times6 = [
                     [1540227823, 1540228423],
                     [1540224603, 1540225204],
                     [1540226210, 1540226811]]
-
-        attacksforipnum6 = {"192.168.1.163": times6}
 
         times7 = [
                     [1540259613, 1540260213],
@@ -211,8 +198,6 @@ class PcapParser:
                     [1540300287, 1540300887],
                     [1540300897, 1540301498],
                     [1540301508, 1540302108]]
-
-        attacksforipnum7 = {"192.168.1.118": times7}
 
         times8 = [
                     [1527833715, 1527834315],
@@ -239,8 +224,6 @@ class PcapParser:
                     [1528292921, 1528293521],
                     [1528289721, 1528290321],
                     [1528291321, 1528291921]]
-
-        attacksforipnum8 = {"192.168.1.223": times8}
 
         times9 = [
                     [1527828872, 1527829472],
@@ -280,8 +263,6 @@ class PcapParser:
                     [1528295532, 1528296133],
                     [1528297133, 1528297733]]
 
-        attacksforipnum9 = {"192.168.1.165": times9}
-
         times10 = [
                     [1540222987, 1540223588],
                     [1540219772, 1540220372],
@@ -311,21 +292,19 @@ class PcapParser:
                     [1540293784, 1540294384],
                     [1540294394, 1540294994]]
 
-        attacksforipnum10 = {"192.168.1.119": times10}
-
+        #creating a dictionary of attacks using ip addresses as keys
         attacksdict = {"192.168.1.248": times1, "192.168.1.129": times2, "192.168.1.239": times3,
                        "192.168.1.227": times4, "192.168.1.241": times5, "192.168.1.163": times6,
                        "192.168.1.118": times7, "192.168.1.223": times8, "192.168.1.165": times9,
                        "192.168.1.119": times10}
 
-        #attack_d = {}
-
         i = 0
         for packet in packets:
 
-            print(packet.show())
+            #uncomment below line to see individual packet summaries in console
+            #print(packet.show())
 
-            count = i
+            #below if statements test for packet layers and extract info into list
 
             if (packet.haslayer(IP)):
                 tempstringsrcip = packet.getlayer(IP).src
@@ -355,8 +334,6 @@ class PcapParser:
             tempstringtstamp = str(packet.time)
             tstamp.extend([tempstringtstamp])
 
-            # Testing for attack and filling last column below
-
             isattack = False
 
             #if srcip is a key in attacks dict, run below for loop
@@ -364,7 +341,7 @@ class PcapParser:
             if tempstringsrcip in attacksdict:
                 counter = 0
                 for position in attacksdict[tempstringsrcip]:
-                    if position[0] <= packet.time and position[1] >= packet.time:
+                    if position[0]*1000 <= packet.time and position[1]*1000 >= packet.time:
                         isattack = True
                         break
 
@@ -374,9 +351,11 @@ class PcapParser:
             print("\n\n\n")
             i += 1
 
-            if i == 15:
-                break
+            #uncomment below two lines in order to limit the number of packets program handles
+            #if i == 15:
+            #    break
 
+        #below lines create a dataframe from lists filled by packet information
         d = {}
         d['Time'] = tstamp
         d['srcIP'] = srcip
@@ -389,8 +368,11 @@ class PcapParser:
         d['attack'] = attack
         df = pd.DataFrame.from_dict(d, orient="index")
 
-        print(df)
+        #df_transposed = df.T
 
-        print("Total: ", i)
+        #uncomment below line to see dataframe summary in console
+        #print(df.T)
 
-        #df.to_csv(index=False)
+        #print("Total: ", i)
+
+        df.T.to_csv('test3.csv', index=False)
