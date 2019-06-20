@@ -72,8 +72,20 @@ class GraphUtils:
                     fw.write("v " + str(local_node_id) + " \"" + str(global_nodes[row['DesIP']]) + "\"\n")
                     local_node_id += 1
 
-                fw.write("d " + str(local_node[row['SrcIP']]) + " to " + str(local_node[row['DesIP']]) +
-                         " call" + "\n")        # Did have str(row["PktSize"])
+                if row["PktSize"] <= 250:
+                    call = "low"
+
+                elif row["PktSize"] <= 750:
+                    call = "med"
+
+                elif row ["PktSize"] > 750:
+                    call = "high"
+
+                else:
+                    call = "error"
+
+                fw.write("d " + str(local_node[row['SrcIP']]) + " " + str(local_node[row['DesIP']]) +
+                         ' "' + call + '"' + "\n")        # Did have str(row["PktSize"])
 
                 count += 1
 
