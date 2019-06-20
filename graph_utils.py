@@ -48,7 +48,7 @@ class GraphUtils:
 
                 curr_time = float(row['Minutes_past'])
 
-                if (curr_time - old_time) >= 5: # if statement creates to graph every minute
+                if (curr_time - old_time) >= 60: # if statement creates to graph every minute
                     minute += 1
                     old_time = curr_time
                     print("\n\n Minute Past: ", minute, "    ", index)
