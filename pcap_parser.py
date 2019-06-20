@@ -371,7 +371,7 @@ class PcapParser:
         df_transposed = df.T
 
         #uncomment below line to see dataframe summary in console
-        print(df.T)
+        #print(df.T)
 
         #print("Total: ", i)
 

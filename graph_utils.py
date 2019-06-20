@@ -32,7 +32,7 @@ class GraphUtils:
         is_new_graph = False  # XP = 1 and create counter
         xp = 1
         fw = open("graphs/" + str(minute) + ".g", "w")
-        fw.write("XP # " + str(xp) + "\n")
+        fw.write("XP # 1\n")
         count = 0
         old_time = float(tcp['Minutes_past'].iloc[1]) #tcp[0]['Minutes_past']
         for index, row in tcp.iterrows():
@@ -72,8 +72,8 @@ class GraphUtils:
                     fw.write("v " + str(local_node_id) + " \"" + str(global_nodes[row['DesIP']]) + "\"\n")
                     local_node_id += 1
 
-                fw.write("d " + str(local_node[row['SrcIP']]) + " " + str(local_node[row['DesIP']]) +
-                         str(row["PktSize"]) + "\n")
+                fw.write("d " + str(local_node[row['SrcIP']]) + " to " + str(local_node[row['DesIP']]) +
+                         " call" + "\n")        # Did have str(row["PktSize"])
 
                 count += 1
 

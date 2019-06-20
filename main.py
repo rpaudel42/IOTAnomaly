@@ -23,7 +23,7 @@ def parse_args():
     args.add_argument('-g','--graphfile', default='data/graph/ihome.g',
                       help='graph file for anomaly detection')
 
-    args.add_argument('-p', "--pcapfile", default="data/pcap/test.pcap",
+    args.add_argument('-p', "--pcapfile", default="test20k.pcap",
                       help="Path to pcap file from wireshark")
 
     args.add_argument('-t',"--timeslice", default=60, type=int,
