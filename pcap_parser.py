@@ -27,15 +27,15 @@ class PcapParser:
         packets = rdpcap(filename)
 
         #creating lists for different packet information
-        tstamp = ["Time"]
-        srcip = ["srcIP"]
-        srcmac = ["srcMAC"]
-        desip = ["desIP"]
-        desmac = ["desMAC"]
-        pktsize = ["pktSize"]
-        srcport = ["srcPort"]
-        desport = ["desPort"]
-        attack = ["attack"]
+        tstamp = []
+        srcip = []
+        srcmac = []
+        desip = []
+        desmac = []
+        pktsize = []
+        srcport = []
+        desport = []
+        attack = []
 
         #below lists contain start and end time pairs for attacks with each list seperate based on ip address
         times1 = [
@@ -331,18 +331,18 @@ class PcapParser:
                 tempstringpktsize = len(packet)
                 pktsize.extend([tempstringpktsize])
 
-            tempstringtstamp = str(packet.time)
-            tstamp.extend([tempstringtstamp])
+            if i >= 1:
+                tempstringtstamp = str(packet.time)
+                tstamp.extend([tempstringtstamp])
 
             isattack = False
 
             #if srcip is a key in attacks dict, run below for loop
 
             if tempstringsrcip in attacksdict:
-                counter = 0
                 for position in attacksdict[tempstringsrcip]:
-                    if position[0]*1000 <= packet.time and position[1]*1000 >= packet.time:
-                        isattack = True
+                    if position[0] <= packet.time and position[1] >= packet.time: #do not need to multiply by 1000
+                        isattack = True                                            #times already match
                         break
 
             tempstringisattack = str(isattack)
@@ -368,10 +368,10 @@ class PcapParser:
         d['attack'] = attack
         df = pd.DataFrame.from_dict(d, orient="index")
 
-        #df_transposed = df.T
+        df_transposed = df.T
 
         #uncomment below line to see dataframe summary in console
-        #print(df.T)
+        print(df.T)
 
         #print("Total: ", i)
 

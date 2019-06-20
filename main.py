@@ -9,6 +9,7 @@
 import argparse
 from csv_parser import CsvParser
 from pcap_parser import PcapParser
+from graph_utils import GraphUtils
 
 def parse_args():
     '''
@@ -16,13 +17,13 @@ def parse_args():
     :return: all command line arguments read
     '''
     args = argparse.ArgumentParser("IOTAnomaly")
-    args.add_argument("-f","--datafile", default = "data/flowdata/74c63b29d71d_flowstats.csv",
+    args.add_argument("-f","--datafile", default='test3.csv',
                       help="Path to directory containing files to be used for constructing graph")
 
     args.add_argument('-g','--graphfile', default='data/graph/ihome.g',
                       help='graph file for anomaly detection')
 
-    args.add_argument('-p', "--pcapfile", default = "data/pcap/test.pcap",
+    args.add_argument('-p', "--pcapfile", default="data/pcap/test.pcap",
                       help="Path to pcap file from wireshark")
 
     args.add_argument('-t',"--timeslice", default=60, type=int,
@@ -46,6 +47,9 @@ def main(args):
 
     pcap = PcapParser()
     pcap.read_pcap_file(args.pcapfile)
+
+    graph = GraphUtils()
+    graph.create_graphs(args.datafile)
 
 if __name__=="__main__":
     args = parse_args()
