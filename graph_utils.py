@@ -38,12 +38,15 @@ class GraphUtils:
         for index, row in tcp.iterrows():
             # print(index, row)
             if 1 == 1:  # row['minutes_past'] < 3:
-                if row['SrcIP'] not in global_nodes:
-                    global_nodes[row['SrcIP']] = global_node_id
+                #if minute >9:
+                #    print(index, row)
+
+                if row['SrcMAC'] not in global_nodes:
+                    global_nodes[row['SrcMAC']] = global_node_id
                     global_node_id += 1
 
-                if row['DesIP'] not in global_nodes:
-                    global_nodes[row['DesIP']] = global_node_id
+                if row['DesMAC'] not in global_nodes:
+                    global_nodes[row['DesMAC']] = global_node_id
                     global_node_id += 1
 
                 curr_time = float(row['Minutes_past'])
@@ -55,22 +58,27 @@ class GraphUtils:
                     fw = open("graphs/" + str(minute) + ".g", "w")
                     fw.write("XP # 1\n")
                     # xp += 1
-                    local_node = {}
+                    #local_node = {}
                     local_node_id = 1
                 # else:
                 #     fw = open("graphs/" + str(old_time) + ".g", "a")
 
                 # minute = row['Minutes_past']
-
-                if row['SrcIP'] not in local_node:
-                    local_node[row['SrcIP']] = local_node_id  # global_nodes[row['source']]
-                    fw.write("v " + str(local_node_id) + " \"" + str(global_nodes[row['SrcIP']]) + "\"\n")
-                    local_node_id += 1
-
-                if row['DesIP'] not in local_node:
-                    local_node[row['DesIP']] = local_node_id  # global_nodes[row['destination']]
-                    fw.write("v " + str(local_node_id) + " \"" + str(global_nodes[row['DesIP']]) + "\"\n")
-                    local_node_id += 1
+                #
+                # if row['SrcIP'] not in local_node:
+                #     local_node[row['SrcIP']] = local_node_id  # global_nodes[row['source']]
+                #     fw.write("v " + str(local_node_id) + " \"" + str(global_nodes[row['SrcIP']]) + "\"\n")
+                #     local_node_id += 1
+                #
+                # if row['DesIP'] not in local_node:
+                #     local_node[row['DesIP']] = local_node_id  # global_nodes[row['destination']]
+                #     fw.write("v " + str(local_node_id) + " \"" + str(global_nodes[row['DesIP']]) + "\"\n")
+                #     local_node_id += 1
+                #
+                fw.write("v " + str(local_node_id) + " \"" + str(global_nodes[row['SrcMAC']]) + "\"\n")
+                local_node_id += 1
+                fw.write("v " + str(local_node_id) + " \"" + str(global_nodes[row['DesMAC']]) + "\"\n")
+                
 
                 if row["PktSize"] <= 250:
                     call = "low"
@@ -84,8 +92,9 @@ class GraphUtils:
                 else:
                     call = "error"
 
-                fw.write("d " + str(local_node[row['SrcIP']]) + " " + str(local_node[row['DesIP']]) +
-                         ' "' + call + '"' + "\n")        # Did have str(row["PktSize"])
+                fw.write("d " + str(local_node_id-1) + " " + str(local_node_id) +
+                         ' "' + call + '"' + "\n")
+                local_node_id += 1
 
                 count += 1
 
