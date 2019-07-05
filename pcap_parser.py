@@ -352,7 +352,7 @@ class PcapParser:
             i += 1
 
             #uncomment below two lines in order to limit the number of packets program handles
-            #if i == 15:
+            # if i == 100:
             #    break
 
         #below lines create a dataframe from lists filled by packet information
