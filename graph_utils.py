@@ -100,6 +100,17 @@ class GraphUtils:
 
         print(count)
 
+    def create_gml(self, g_list):
+        for g in g_list:
+            fw = open("gml/"+ str(g) +".gml", "w")
+            fw.write("graph\n[\n")
+            for node in g_list[g]['node']:
+                fw.write("  node\n  [\n     id "+ str(node) + "\n   ]\n")
+            for edge in g_list[g]['edge']:
+                fw.write("  edge\n  [\n     source " + str(edge.split(' ')[0]) + "\n     target "+ str(edge.split(' ')[1]) +"\n       ]\n")
+            fw.write("]\n")
+
+
     def get_weighted_graph_from_csv(self, csv_file):
         print("\n\n ---- Creating Graph Files -----")
         firewall_log = pd.DataFrame(index=[], columns=[])
