@@ -6,7 +6,7 @@
 # 6/5/19   Paudel     Initial version,
 # ******************************************************************************
 
-import argparse
+import argparse, json
 from csv_parser import CsvParser
 from pcap_parser import PcapParser
 from graph_utils import GraphUtils
@@ -23,7 +23,7 @@ def parse_args():
     args.add_argument('-g','--graphfile', default='data/graph/ihome.g',
                       help='graph file for anomaly detection')
 
-    args.add_argument('-p', "--pcapfile", default="test1.5mil.pcap",
+    args.add_argument('-p', "--pcapfile", default="test20k.pcap",
                       help="Path to pcap file from wireshark")
 
     args.add_argument('-t',"--timeslice", default=60, type=int,
@@ -46,10 +46,16 @@ def main(args):
     # csv.read_csv_file(args.datafile)
 
     pcap = PcapParser()
-    pcap.read_pcap_file(args.pcapfile)
+    pcap.read_pcap_file(args.pcapfile, args.datafile)
 
     graph = GraphUtils()
-    graph.create_graphs(args.datafile)
+    # graph.create_graphs(args.datafile)
+    g_list = graph.get_weighted_graph_from_csv(args.datafile)
+
+    with open('json/graphs_iot.json', 'w') as fp:
+        json.dump(g_list, fp, indent=3)
+
+    print("Finish graph construction")
 
 if __name__=="__main__":
     args = parse_args()

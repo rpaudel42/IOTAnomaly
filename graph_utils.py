@@ -99,3 +99,77 @@ class GraphUtils:
                 count += 1
 
         print(count)
+
+    def get_weighted_graph_from_csv(self, csv_file):
+        print("\n\n ---- Creating Graph Files -----")
+        firewall_log = pd.DataFrame(index=[], columns=[])
+        log = pd.read_csv(csv_file)
+        firewall_log = firewall_log.append(log)
+        firewall_log = firewall_log.iloc[:, [0, 1, 2, 3]]
+        firewall_log.columns = ['source', 'destination', 'anomaly', 'time_past']
+        firewall_log = firewall_log[firewall_log.source != '(empty)'].reset_index()
+        # print(firewall_log)
+
+        g_list = {}
+        graph = {}
+        node = {}
+        edge = {}
+        label = 0
+
+        global_nodes = {}
+        local_node = {}
+        global_node_id = 1
+        local_node_id = 1
+        hour = 0
+        anom_count = 0
+        for index, row in firewall_log.iterrows():
+            if 1 == 1:  # row['hours_past'] < 5:
+                if row['source'] not in global_nodes:
+                    global_nodes[row['source']] = global_node_id
+                    global_node_id += 1
+
+                if row['destination'] not in global_nodes:
+                    global_nodes[row['destination']] = global_node_id
+                    global_node_id += 1
+
+                curr_hour = row['time_past']
+
+                if hour != curr_hour:
+                    print("\n\n Hour Past: ", hour, "    ", index)
+                    graph['node'] = node
+                    graph['edge'] = edge
+                    graph['anom_count'] = anom_count
+                    if anom_count >= 100:
+                        graph['label'] = 1
+                    else:
+                        graph['label'] = 0
+                    g_list[hour] = graph
+
+                    graph = {}
+                    node = {}
+                    edge = {}
+                    local_node = {}
+                    local_node_id = 1
+                    anom_count = 0
+
+                hour = row['time_past']
+
+                if row['anomaly'] == 1:
+                    anom_count += 1
+
+                if row['source'] not in local_node:
+                    local_node[row['source']] = local_node_id  # global_nodes[row['source']]
+                    node[local_node_id] = global_nodes[row['source']]
+                    local_node_id += 1
+
+                if row['destination'] not in local_node:
+                    node[local_node_id] = global_nodes[row['destination']]
+                    local_node[row['destination']] = local_node_id  # global_nodes[row['destination']]
+                    local_node_id += 1
+                edge_id = str(local_node[row['source']]) + ' ' + str(local_node[row['destination']])
+                if edge_id in edge:
+                    count = edge[edge_id]
+                    edge[edge_id] = count + 1
+                else:
+                    edge[edge_id] = 1
+        return g_list
