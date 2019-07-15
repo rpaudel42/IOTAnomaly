@@ -48,17 +48,22 @@ def parse_args():
 
     return args.parse_args()
 
-def data_preprocess():
+def data_preprocess(args):
     # csv = CsvParser()
     # csv.read_csv_file(args.datafile)
 
-    pcap = PcapParser()
+    # pcap = PcapParser()
     # pcap.list_attack_time()
-    pcap.read_pcap_file(args.pcapfile, args.datafile)
+    # pcap.read_pcap_file(args.pcapfile, args.datafile)
 
     graph = GraphUtils()
     # graph.create_graphs(args.datafile)
+
     g_list = graph.get_weighted_graph_from_csv(args.datafile)
+
+    with open('json/iot_june_01.json', 'w') as fp:
+        json.dump(g_list, fp, indent=3)
+    print("Finish graph construction")
 
     # Create a gml file for visualization..
     # graph.create_gml(g_list)
@@ -82,6 +87,6 @@ def graph_sketching(args):
 if __name__=="__main__":
     args = parse_args()
 
-    # data_preprocess(args)
+    data_preprocess(args)
     graph_sketching(args)
 
