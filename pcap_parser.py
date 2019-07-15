@@ -281,18 +281,19 @@ class PcapParser:
     def is_attack(self, packet_time, device_ip):
         if device_ip in self.attacksdict:
             for time in self.attacksdict[device_ip]:
-                if (packet_time >= time[0] and time[0] >= packet_time):
+                if (packet_time >= time[0] and time[1] >= packet_time):
                     return True
         return False
 
-
-    def read_pcap_file(self, filename, output_file):
-        #check start and end time
+    def list_attack_time(self):
+        # check start and end time
         for ip in self.attacksdict.keys():
             print("\n\n.... Device ... ", ip)
             for time in self.attacksdict[ip]:
-                print("Start Time: ", datetime.utcfromtimestamp(int(time[0])).strftime('%Y-%m-%d %H:%M:%S.%f'), "    End Time : ", datetime.utcfromtimestamp(int(time[1])).strftime('%Y-%m-%d %H:%M:%S.%f'))
+                print("Start Time: ", datetime.utcfromtimestamp(int(time[0])).strftime('%Y-%m-%d %H:%M:%S.%f'),
+                      "    End Time : ", datetime.utcfromtimestamp(int(time[1])).strftime('%Y-%m-%d %H:%M:%S.%f'))
 
+    def read_pcap_file(self, filename, output_file):
         if not os.path.isfile(filename):
             print('"{}" does not exist'.format(filename), file=sys.stderr)
             sys.exit(-1)

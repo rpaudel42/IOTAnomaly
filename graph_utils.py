@@ -7,11 +7,12 @@
 # ******************************************************************************
 
 import pandas as pd
+import networkx as nx
 
 class GraphUtils:
 
     def __init__(self):
-        print("\n\n..... Creating graphs.....")
+        # print("\n\n..... Creating graphs.....")
         pass
 
     def create_graphs(self, csv_file):          #work with this function to create .g from .csv
@@ -99,6 +100,24 @@ class GraphUtils:
                 count += 1
 
         print(count)
+
+    def create_graph(self, graph):
+        G = nx.MultiGraph()  # make id di graph is 2 1 and 1 2 need to be different edge
+        node = {}
+        for n in graph['node']:
+            node[n] = graph['node'][n]
+            G.add_node(n, label=graph['node'][n])
+        for e in graph['edge']:
+            src, dest = e.split(' ')
+            # edge_count = graph['edge'][e]
+            # print("Edge:  ", graph['edge'][e])
+            # if int(graph['edge'][e]) < 100:
+            #     edge_count = int(graph['edge'][e])
+            # else:
+            #     edge_count = 100
+            # for i in  range(edge_count): #range(graph['edge'][e]):
+            G.add_edge(src, dest, label=graph['edge'][e], weight=graph['edge'][e])
+        return G
 
     def create_gml(self, g_list):
         for g in g_list:
