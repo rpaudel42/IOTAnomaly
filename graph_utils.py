@@ -123,10 +123,11 @@ class GraphUtils:
         fw = open("gbad/iot.g", "w")
         for g in g_list:
             # print("G: ", g)
+            graph_id = int(g)
             if int(g_list[g]['label']) ==  1:
-                fw.write("XN # " + str(g) + "\n")
+                fw.write("XN # " + str(graph_id+1) + "\n")
             else:
-                fw.write("XP # " + str(g) + "\n")
+                fw.write("XP # " + str(graph_id+1) + "\n")
             for n in g_list[g]['node']:
                 # print("node: ", n, g_list[g]['node'][n])
                 fw.write("v "+ str(n) + " \"" + str(g_list[g]['node'][n])+ "\"\n")
