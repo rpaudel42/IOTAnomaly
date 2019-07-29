@@ -301,32 +301,83 @@ class PcapParser:
         #reads packet capture using scapy
         packets = rdpcap(filename)
         iot = []
+        prev_time = 0
         for packet in packets:
-            if (packet.haslayer(IP)):
-                srcip = packet.getlayer(IP).src
-                desip = packet.getlayer(IP).dst
-                iot.append([datetime.utcfromtimestamp(int(packet.time)).strftime('%Y-%m-%d %H:%M:%S.%f'), srcip, desip, self.is_attack(packet_time=packet.time, device_ip= srcip)])
+            if packet.haslayer(IP):
+                if packet.getlayer(IP).src == "192.168.1.239":
+                    #above two if statements test for attack IP and  can be substituted for any attack IP
+                    ip = "0"
+                    https = "0"
+                    http = "0"
+                    udp = "0"
+                    tcp = "0"
+                    arp = "0"
+                    icmp = "0"
 
-            # if (packet.haslayer(TCP)):
-            #     tempstringsrcport = packet.getlayer(TCP).sport
-            #     srcport.extend([tempstringsrcport])
-            #     tempstringdesport = packet.getlayer(TCP).dport
-            #     desport.extend([tempstringdesport])
-            # elif (packet.haslayer(UDP)):
-            #     tempstringsrcport = packet.getlayer(UDP).sport
-            #     srcport.extend([tempstringsrcport])
-            #     tempstringdesport = packet.getlayer(UDP).dport
-            #     desport.extend([tempstringdesport])
-            #
-            # if (packet.haslayer(Ether)):
-            #     tempstringsrcmac = packet.getlayer(Ether).src
-            #     srcmac.extend([tempstringsrcmac])
-            #     tempstringdesmac = packet.getlayer(Ether).dst
-            #     desmac.extend([tempstringdesmac])
-            #     tempstringpktsize = len(packet)
-            #     pktsize.extend([tempstringpktsize])
+                    if (packet.haslayer(IP)):
+                        srcip = packet.getlayer(IP).src
+                        desip = packet.getlayer(IP).dst
 
-        iot_traffic = pd.DataFrame(iot, columns=['time', 'source', 'destination', 'anomaly'])
+                    # elif (packet.haslayer(IPv6)):
+                    #     srcip = packet.getlayer(IPv6).src
+                    #     desip = packet.getlayer(IPv6).dst
+                    #
+                    # elif (packet.haslayer(Ether)):
+                    #     srcip = packet.getlayer(Ether).src
+                    #     desip = packet.getlayer(Ether).dst
+
+                    if (packet.haslayer(TCP)):
+                        # print(packet.getlayer(TCP).sport)
+                        # below if statements determine if packet is http or https based on ports used
+                        # this approach can be used on other protocols which are not easily extracted
+                        if (packet.getlayer(TCP).sport == 443 or packet.getlayer(TCP).dport == 443):
+                            https = "1"
+                        elif (packet.getlayer(TCP).sport == 80 or packet.getlayer(TCP).dport == 80):
+                            http = "1"
+                        else:
+                            tcp = "1"
+
+                    if (packet.haslayer(ARP)):
+                        arp = "1"
+
+                    if (packet.haslayer(ICMP)):
+                        icmp = "1"
+
+                    if (packet.haslayer(UDP)):
+                        udp = "1"
+
+                    current_time = packet.time
+                    deltat = current_time - prev_time
+                    prev_time = current_time
+
+                    # print(packet.show())
+
+                    # if (packet.haslayer(TCP)):
+                    #     tempstringsrcport = packet.getlayer(TCP).sport
+                    #     srcport.extend([tempstringsrcport])
+                    #     tempstringdesport = packet.getlayer(TCP).dport
+                    #     desport.extend([tempstringdesport])
+                    # elif (packet.haslayer(UDP)):
+                    #     tempstringsrcport = packet.getlayer(UDP).sport
+                    #     srcport.extend([tempstringsrcport])
+                    #     tempstringdesport = packet.getlayer(UDP).dport
+                    #     desport.extend([tempstringdesport])
+                    #
+                    # if (packet.haslayer(Ether)):
+                    #     tempstringsrcmac = packet.getlayer(Ether).src
+                    #     srcmac.extend([tempstringsrcmac])
+                    #     tempstringdesmac = packet.getlayer(Ether).dst
+                    #     desmac.extend([tempstringdesmac])
+
+                    tempstringpktsize = len(packet)
+
+                    iot.append([datetime.utcfromtimestamp(int(packet.time)).strftime('%Y-%m-%d %H:%M:%S.%f'), srcip, desip, ip,
+                                https, http, udp, tcp, arp, icmp, tempstringpktsize, deltat,
+                                self.is_attack(packet_time=packet.time, device_ip=srcip)])
+
+
+        iot_traffic = pd.DataFrame(iot, columns=['time', 'source', 'destination', 'ip', 'https', 'http',
+                                                 'udp', 'tcp', 'arp', 'icmp', 'PktSize', 'deltaT', 'anomaly'])
 
         print("\n\n.....Finish Dataframe Creation.....")
 
@@ -337,6 +388,8 @@ class PcapParser:
         iot_traffic['time_past'] = iot_traffic['time'].dt.days * 24 + iot_traffic['time'].dt.seconds // 60
         iot_traffic = iot_traffic.drop('time', axis=1)
         iot_traffic = iot_traffic.sort_values('time_past')
+
+        print(iot_traffic)
 
         iot_traffic.to_csv(output_file, index=False)
         print("\n\n.....Finish PCAP Parsing.....")
