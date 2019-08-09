@@ -11,6 +11,7 @@ import argparse, json
 from pcap_parser import PcapParser
 from graph_utils import GraphUtils
 from graph_sketch import ShingleSketch
+from classifying_testing_anom_detect import ClassifyingTestingAnomDetect
 
 def parse_args():
     '''
@@ -18,7 +19,7 @@ def parse_args():
     :return: all command line arguments read
     '''
     args = argparse.ArgumentParser("IOTAnomaly")
-    args.add_argument("-f","--datafile", default='june-01.csv',
+    args.add_argument("-f","--datafile", default='18-06-01test.csv',
                       help="Path to directory containing files to be used for constructing graph")
 
     args.add_argument('-g','--graphfile', default='data/graph/ihome.g',
@@ -44,7 +45,7 @@ def parse_args():
     args.add_argument('--num_walks', type=int, default=1,
                       help='Number of walks per source. Default is 10.')
 
-    args.add_argument('--k_shingle', default=3, type=int, help='Lenght of a shinle')
+    args.add_argument('--k_shingle', default=3, type=int, help='Length of a shingle')
 
     return args.parse_args()
 
@@ -52,41 +53,48 @@ def data_preprocess(args):
     # csv = CsvParser()
     # csv.read_csv_file(args.datafile)
 
-    # pcap = PcapParser()
-    # pcap.list_attack_time()
-    # pcap.read_pcap_file(args.pcapfile, args.datafile)
+    pcap = PcapParser()
+    pcap.list_attack_time()
+    pcap.read_pcap_file(args.pcapfile, args.datafile)
 
-    graph = GraphUtils()
+    # graph = GraphUtils()
     # graph.create_graphs(args.datafile)
 
-    g_list = graph.get_weighted_graph_from_csv(args.datafile)
-
-    with open('json/iot_june_01.json', 'w') as fp:
-        json.dump(g_list, fp, indent=3)
-    print("Finish graph construction")
+    # g_list = graph.get_weighted_graph_from_csv(args.datafile)
+    #
+    # with open('json/iot_june_01.json', 'w') as fp:
+    #     json.dump(g_list, fp, indent=3)
+    # print("Finish graph construction")
 
     # Create a gml file for visualization..
     # graph.create_gml(g_list)
 
-    with open('json/iot_june_01.json', 'w') as fp:
-        json.dump(g_list, fp, indent=3)
+    # with open('json/iot_june_01.json', 'w') as fp:
+    #     json.dump(g_list, fp, indent=3)
 
-    print("Finish graph construction")
+    # print("Finish graph construction")
 
 def graph_sketching(args):
-    with open('json/iot_june_01.json') as jsonfile:
+    with open('json/iot_june_01_10sec.json') as jsonfile:
         graphs = json.load(jsonfile)
     print("[ ", len(graphs), " ] graphs read successfully")
 
+    g = GraphUtils()
+    g.create_gbad_file(graphs)
 
-    sketch = ShingleSketch()
-    sketch.shingle_sketch(graphs, args)
-    print("\n Done Batch Sketching...")
+    # sketch = ShingleSketch()
+    # sketch.shingle_sketch(graphs, args)
+    # print("\n Done Batch Sketching...")
 
+def classifying(args):
+    classify = ClassifyingTestingAnomDetect(args.datafile)
+    classify.read_csv_file(args.datafile)
+    classify.classifying_testing_anom_detect(args)
 
 if __name__=="__main__":
     args = parse_args()
 
-    data_preprocess(args)
-    graph_sketching(args)
+    # data_preprocess(args)
+    # graph_sketching(args)
+    classifying(args)
 
